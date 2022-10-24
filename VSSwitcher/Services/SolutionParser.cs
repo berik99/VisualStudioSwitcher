@@ -49,6 +49,9 @@ namespace VSSwitcher.Services
                 case 12:
                     switch (vsVersion)
                     {
+                        case 2012:
+                            VisualStudioVersion = VSVersion.VS2012;
+                            break;
                         case 2013:
                             VisualStudioVersion = VSVersion.VS2013;
                             break;

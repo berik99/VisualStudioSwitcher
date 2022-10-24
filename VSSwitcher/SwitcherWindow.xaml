@@ -5,10 +5,10 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:VSSwitcher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="SwitcherWindow"
+    Title="Visual Studio Switcher"
     Width="350"
     ResizeMode="NoResize"
-    ShowInTaskbar="False"
+    ShowInTaskbar="True"
     SizeToContent="Height"
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
@@ -17,61 +17,73 @@
     <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="30" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="80" />
         </Grid.RowDefinitions>
 
-        <TextBlock
-            Grid.Row="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Text="VSSwitcher" />
-
-        <StackPanel
-            HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
-
-            <Button
-                Name="SettingsButton"
-                Grid.Row="0"
-                Width="20"
-                Height="20"
-                Margin="0,0,10,0"
-                Click="SettingsButton_Click"
-                Content="S" />
-
-            <Button
-                Name="CloseButton"
-                Grid.Row="0"
-                Width="20"
-                Height="20"
-                Click="CloseButton_Click"
-                Content="X" />
-
-        </StackPanel>
-
-
-        <StackPanel Grid.Row="1" Margin="0,10">
-            <ListView
-                Name="ListShow"
-                VerticalAlignment="Top"
-                SelectionChanged="ListShow_SelectionChanged">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <TextBlock FontSize="25" Text="{Binding Description}" />
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+        <Grid Grid.Row="0">
             <TextBlock
-                Name="MessageText"
-                VerticalAlignment="Bottom"
-                Foreground="Red" />
+                Name="AppName"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center" />
+
+            <StackPanel
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+
+                <Button
+                    Name="SettingsButton"
+                    Grid.Row="0"
+                    Width="20"
+                    Height="20"
+                    Margin="0,0,10,0"
+                    Click="SettingsButton_Click"
+                    Content="S" />
+
+                <Button
+                    Name="CloseButton"
+                    Grid.Row="0"
+                    Width="20"
+                    Height="20"
+                    Click="CloseButton_Click"
+                    Content="X" />
+
+            </StackPanel>
+        </Grid>
+
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Name="SolutionName" FontSize="22" />
+            <Button
+                Name="SolutionPicker"
+                Click="SolutionPicker_Click"
+                Content="Select sln" />
         </StackPanel>
 
-        <Grid Grid.Row="2">
+        <ListView
+            Name="ListShow"
+            Grid.Row="2"
+            VerticalAlignment="Top"
+            SelectionChanged="ListShow_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <TextBlock FontSize="25" Text="{Binding Description}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock
+            Name="MessageText"
+            Grid.Row="3"
+            VerticalAlignment="Bottom"
+            Foreground="Red" />
+
+        <Grid Name="BottomContent" Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".5*" />
                 <ColumnDefinition Width=".5*" />

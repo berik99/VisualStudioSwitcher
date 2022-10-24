@@ -5,13 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Shell;
 using TestVSSelector.Models;
 using VSSwitcher.Models;
 using Path = System.IO.Path;
 
 namespace VSSwitcher
 {
-    public partial class App : Application
+    public partial class Application : System.Windows.Application
     {
         private const string confFileName = "configuration.json";
         private const string appName = "Visual Studio Switcher";
@@ -21,7 +22,7 @@ namespace VSSwitcher
         public static string CurrFile { get; private set; }
         public static Configuration Configuration { get; private set; }
 
-        public App()
+        public Application()
         {
             var confDirPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), appName, confFolder);
             Directory.CreateDirectory(confDirPath);
@@ -40,6 +41,8 @@ namespace VSSwitcher
             {
                 Configuration = new Configuration();
             }
+
+            BuildJumpList();
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -52,17 +55,11 @@ namespace VSSwitcher
                     var sln = Configuration.Solutions.Find(s => s.FilePath == CurrFile);
                     var vsPath = Configuration.VSList.Find(v => v.VSID == sln.VSID).Path;
                     RunVisualStudio(vsPath, CurrFile, sln.UseAdminPermission);
-                }
-                else
-                {
-                    SwitcherWindow mainView = new SwitcherWindow();
-                    mainView.Show();
+                    Current.Shutdown();
                 }
             }
-            else
-            {
-                Current.Shutdown();
-            }
+            SwitcherWindow mainView = new SwitcherWindow();
+            mainView.Show();
         }
 
         private void Application_Exit(object sender, ExitEventArgs e)
@@ -76,18 +73,39 @@ namespace VSSwitcher
         {
             try
             {
-                fileToOpen = $"\"{fileToOpen}\"";
+                if (!string.IsNullOrEmpty(fileToOpen))
+                    fileToOpen = $"\"{fileToOpen}\"";
+
                 vsToRun = $"\"{vsToRun}\"";
 
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = vsToRun,
                     WindowStyle = ProcessWindowStyle.Normal,
-                    Arguments = fileToOpen,
+                    Arguments = string.IsNullOrEmpty(fileToOpen) ? null : fileToOpen,
                     Verb = useAdminPerms ? "runas" : ""
                 });
             }
             catch (Exception ex) { }
+        }
+
+        private void BuildJumpList()
+        {
+            JumpList.SetJumpList(Current, new JumpList());
+            var jl = JumpList.GetJumpList(Current);
+            jl.ShowFrequentCategory = false;
+            jl.ShowRecentCategory = true;
+
+            foreach (var vs in Configuration.VSList)
+            {
+                jl.JumpItems.Add(new JumpTask
+                {
+                    ApplicationPath = vs.Path,
+                    IconResourcePath = vs.Path,
+                    Title = vs.Description,
+                });
+            }
+            jl.Apply();
         }
     }
 }
